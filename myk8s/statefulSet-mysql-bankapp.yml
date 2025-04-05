@@ -1,0 +1,69 @@
+# created when database required in apllication beacuse if wew created deployement and if any pod deleted from deployemented state their state not recovered when any pod deleted. suppose any pod delted at run time and their replica creation required time that creation period may lost data and their stat also to maintaintain state we have to craete stateful state
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-statefulset
+  namespace: bankapp-namespace
+  labels:
+    app: mysql
+spec: # stateful set related, required 3 thing -components
+  serviceName: mysql-headless # 1st thing service, 2nd volume and 3rd mount claim template, liveness probe--simimilar to healthcheck in docker compose file, readiness probe---container is ready or not, env variables, conatners
+  replicas: 1
+  selector: # same as deployement
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec: # insifde stateful set pod present pod running conatiner
+      containers:
+      - name: mysql
+        image: mysql:latest
+        ports:
+        - containerPort: 3306 # till here same as deployement
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bankapp-secret # name should be same as mensioned in secrete file
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: bankapp-config
+              key: MYSQL_DATABASE
+        volumeMounts: # component of stateful set, pod space or state attaching pod and volume mount space
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+              - mysqladmin
+              - ping
+              - -h
+              - localhost
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe: #pod is active and helthy
+          exec:
+            command:
+              - mysqladmin
+              - ping
+              - -h
+              - localhost
+          initialDelaySeconds: 30
+          periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata: 
+        name: mysql-data
+        labels:
+          app: mysql
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+

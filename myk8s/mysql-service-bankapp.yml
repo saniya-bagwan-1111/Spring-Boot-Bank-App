@@ -1,0 +1,17 @@
+#Stefulstate required to expose their service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+  namespace: bankapp-namespace
+  labels:
+    app: mysql
+spec:
+  clusterIP: None # created specific to cluser not exposed outside cluster
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+
