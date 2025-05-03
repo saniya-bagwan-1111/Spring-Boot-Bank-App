@@ -6,5 +6,8 @@ metadata:
   namespace: bankapp-namespace
 data:
   MYSQL_DATABASE: BankDB
-    #SPRING_DATASOURCE_URL: jdbc:mysql://mysql-svc.bankapp-namespace.svc.cluster.local:3306/BankDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    #SPRING_DATASOURCE_USERNAME: root
+  # SPRING_DATASOURCE_URL: jdbc:mysql://mysql-svc.bankapp-namespace.svc.cluster.local:3306/BankDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql-statefulset-0.mysql-headless.bankapp-namespace.svc.cluster.local:3306/BankDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  #SPRING_DATASOURCE_URL: jdbc:mysql://mysql-headless.bankapp-namespace.svc.cluster.local:3306/BankDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  # jdbc:mysql://firstcontainer.container_service_name.namespace_name.svc.cluster.local
+  SPRING_DATASOURCE_USERNAME: root
